@@ -27,15 +27,9 @@ goto RELOAD
 
 
 :RELOAD
-taskkill /f /im salad.exe
-timeout 5
+
 taskkill /f /im salad.bowl.service.exe
-set /a rand=%random% %%60+120
-timeout /t %rand%
-start /MIN cmd.exe /c "C:\Program Files\Salad\Salad.exe"
-timeout 3
-TASKKILL /F /IM explorer.exe
-start "explorer.exe" "C:\Windows\explorer.exe"
+
 echo Reload Salad!
 
 
