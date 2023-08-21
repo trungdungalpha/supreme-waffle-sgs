@@ -1,5 +1,5 @@
 if not DEFINED IS_MINIMIZED set IS_MINIMIZED=1 && start "SGS" /min "%~f0" %* && exit
-@echo off
+@echo on
 
 start /MIN cmd.exe /c call "ForceReset"
 
@@ -32,7 +32,7 @@ timeout 5
 taskkill /f /im salad.bowl.service.exe
 set /a rand=%random% %%60+120
 timeout /t %rand%
-start "salad.exe" "C:\Program Files\Salad\Salad.exe"
+start /MIN cmd.exe /c "C:\Program Files\Salad\Salad.exe"
 timeout 3
 TASKKILL /F /IM explorer.exe
 start "explorer.exe" "C:\Windows\explorer.exe"
