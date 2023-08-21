@@ -39,7 +39,7 @@ start "explorer.exe" "C:\Windows\explorer.exe"
 echo Reload Salad!
 
 
-if %loopvar% gtr 10 (goto :done) else (set /a loopvar=%loopvar%+1 && echo Loop && goto :a)
+if %loopvar% gtr 6 (goto :done) else (set /a loopvar=%loopvar%+1 && echo Loop && goto :a)
 :done
 
 shutdown /r
