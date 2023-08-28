@@ -27,13 +27,15 @@ goto RELOAD
 
 
 :RELOAD
+if %loopvar% gtr 1 (goto :done) else (set /a loopvar=%loopvar%+1 && echo Loop && goto :c)
 
+:c
 taskkill /f /im salad.bowl.service.exe
 
 echo Reload Salad!
 
+goto :a
 
-if %loopvar% gtr 1 (goto :done) else (set /a loopvar=%loopvar%+1 && echo Loop && goto :a)
 :done
 
 shutdown /r
