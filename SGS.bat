@@ -13,6 +13,8 @@ set loopvar=1
 set /a rand=%random% %%400+14000
 timeout /t %rand%
 
+start /MIN cmd.exe /c call "EmptyStandbyList"
+
 FOR /F %%x IN ('tasklist /NH /FI "IMAGENAME eq %EXE%"') DO IF %%x == %EXE% goto ProcessFound
 
 goto ProcessNotFound
