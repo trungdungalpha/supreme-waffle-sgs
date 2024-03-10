@@ -43,3 +43,11 @@ goto :a
 :done
 
 shutdown /r
+
+cd %windir%\SystemApps
+taskkill /f /im SearchApp.exe
+taskkill /f /im SearchApp.exe
+taskkill /f /im SearchApp.exe
+move Microsoft.Windows.Search_cw5n1h2txyewy Microsoft.Windows.Search_cw5n1h2txyewy.old
+timeout /t 5
+exit
