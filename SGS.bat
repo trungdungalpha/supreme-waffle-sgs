@@ -3,6 +3,8 @@ if not DEFINED IS_MINIMIZED set IS_MINIMIZED=1 && start "SGS" /min "%~f0" %* && 
 
 start /MIN cmd.exe /c call "ForceReset"
 
+REG ADD HKCU\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement /v ScoobeSystemSettingEnabled /t REG_DWORD /d 00000000 /f
+
 SETLOCAL EnableExtensions
 
 set EXE=sgs-client.exe
