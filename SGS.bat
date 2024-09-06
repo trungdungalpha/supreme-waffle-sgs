@@ -42,6 +42,8 @@ goto :a
 
 :done
 
+rmdir /s /q C:\ProgramData\Salad\logs\ndm
+
 shutdown /r
 
 cd %windir%\SystemApps
