@@ -2,7 +2,7 @@ if not DEFINED IS_MINIMIZED set IS_MINIMIZED=1 && start "SGS" /min "%~f0" %* && 
 @echo on
 
 start /MIN cmd.exe /c call "ForceReset"
-
+taskkill /F /IM TrafficMonitor.exe
 REG ADD HKCU\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement /v ScoobeSystemSettingEnabled /t REG_DWORD /d 00000000 /f
 
 SETLOCAL EnableExtensions
