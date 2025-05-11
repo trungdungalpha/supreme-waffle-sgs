@@ -1,55 +1,60 @@
-if not DEFINED IS_MINIMIZED set IS_MINIMIZED=1 && start "SGS" /min "%~f0" %* && exit
-@echo on
+@echo off
 
+:: Relaunch the script minimized if not already
+if not defined IS_MINIMIZED (
+    set IS_MINIMIZED=1
+    start "SGS Monitor" /min "%~f0" %*
+    exit
+)
+
+:: Initial setup
 start /MIN cmd.exe /c call "ForceReset"
-taskkill /F /IM TrafficMonitor.exe
-REG ADD HKCU\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement /v ScoobeSystemSettingEnabled /t REG_DWORD /d 00000000 /f
+taskkill /F /IM TrafficMonitor.exe >nul 2>&1
+REG ADD HKCU\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement /v ScoobeSystemSettingEnabled /t REG_DWORD /d 0 /f >nul
 
-SETLOCAL EnableExtensions
+setlocal EnableExtensions
 
-set EXE=sgs-client.exe
+set "EXE=sgs-client.exe"
+set "loopvar=0"
 
-set loopvar=1
+:monitor_loop
+:: Wait between 7200 and 9000 seconds (2 to 2.5 hours)
+set /a delay=(%RANDOM% %%1801) + 7200
+timeout /t %delay% /nobreak >nul
 
-:a
-set /a rand=%random% %%400+14000
-timeout /t %rand%
+:: Check if the process is running
+tasklist /FI "IMAGENAME eq %EXE%" 2>NUL | find /I "%EXE%" >NUL
+if not errorlevel 1 (
+    echo %EXE% is running.
+    set "loopvar=0"
+    goto monitor_loop
+) else (
+    echo %EXE% is NOT running.
+    goto reload_attempt
+)
 
+:reload_attempt
+if %loopvar% geq 3 (
+    goto shutdown_sequence
+) else (
+    set /a loopvar+=1
+    echo Attempt #%loopvar% to recover...
+    goto try_restart_service
+)
 
+:try_restart_service
+taskkill /F /IM salad.bowl.service.exe >nul 2>&1
+echo Salad service terminated. Retrying in next cycle...
+goto monitor_loop
 
-FOR /F %%x IN ('tasklist /NH /FI "IMAGENAME eq %EXE%"') DO IF %%x == %EXE% goto ProcessFound
+:shutdown_sequence
+echo Recovery failed after %loopvar% attempts. Proceeding with shutdown and cleanup...
+rmdir /s /q "C:\ProgramData\Salad\logs\ndm" >nul 2>&1
 
-goto ProcessNotFound
+:: Optional: Disable Windows Search
+cd /d %windir%\SystemApps
+taskkill /F /IM SearchApp.exe >nul 2>&1
+move "Microsoft.Windows.Search_cw5n1h2txyewy" "Microsoft.Windows.Search_cw5n1h2txyewy.old" >nul 2>&1
 
-:ProcessFound
-echo %EXE% is running
-goto a
-
-:ProcessNotFound
-echo %EXE% is not running
-goto RELOAD
-
-
-:RELOAD
-if %loopvar% gtr 1 (goto :done) else (set /a loopvar=%loopvar%+1 && echo Loop && goto :c)
-
-:c
-taskkill /f /im salad.bowl.service.exe
-
-echo Reload Salad!
-
-goto :a
-
-:done
-
-rmdir /s /q C:\ProgramData\Salad\logs\ndm
-
-shutdown /r
-
-cd %windir%\SystemApps
-taskkill /f /im SearchApp.exe
-taskkill /f /im SearchApp.exe
-taskkill /f /im SearchApp.exe
-move Microsoft.Windows.Search_cw5n1h2txyewy Microsoft.Windows.Search_cw5n1h2txyewy.old
-timeout /t 5
-exit
+timeout /t 5 >nul
+shutdown /r /t 0
